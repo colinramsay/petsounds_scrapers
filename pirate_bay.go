@@ -15,6 +15,18 @@ type Scraper interface {
 	BestMatch() []string
 }
 
+func BuildTorrentFilenameFromMagnet(dest string, magnet string) string {
+	u, err := url.Parse(magnet)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	name := strings.Replace(u.Query()["xt"][0], "urn:btih:", "", -1)
+
+	return dest + name + ".torrent"
+}
+
 func MagnetToTorrent(magnet string, destination string) {
 	resp, err := http.PostForm("http://magnet2torrent.com/upload/", url.Values{"magnet": {magnet}})
 	defer resp.Body.Close()
@@ -22,15 +34,7 @@ func MagnetToTorrent(magnet string, destination string) {
 		log.Fatal(err)
 	}
 
-	u, err := url.Parse(magnet)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Get something to use as the filename for the torrent
-	link := strings.Replace(u.Query()["xt"][0], "urn:btih:", "", -1)
-
-	out, err := os.Create("./" + link + ".torrent")
+	out, err := os.Create(BuildTorrentFilenameFromMagnet(destination, magnet))
 	defer out.Close()
 
 	if err != nil {
@@ -49,6 +53,6 @@ func NewPirateBay(proxyUrl string) *PirateBay {
 }
 
 func (pb PirateBay) Search(term string) []string {
-	doc, _ := goquery.NewDocument(pb.ProxyUrl + "/0/7/0")
+	//doc, _ := goquery.NewDocument(pb.ProxyUrl + "/0/7/0")
 	return []string{}
 }

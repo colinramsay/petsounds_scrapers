@@ -3,8 +3,8 @@ package petsounds_scrapers
 import (
 	"os"
 	"path/filepath"
-	"testing"
 	"strings"
+	"testing"
 )
 
 const validProxy string = "http://tpb.unblocked.co"

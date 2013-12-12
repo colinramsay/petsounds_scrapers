@@ -63,3 +63,8 @@ func (pb PirateBay) Search(term string) string {
 
 	return result
 }
+
+func (pb PirateBay) SearchAndSave(term string, dest string) {
+	magnet := pb.Search(term)
+	MagnetToTorrent(magnet, dest)
+}

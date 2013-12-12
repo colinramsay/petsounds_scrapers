@@ -26,7 +26,7 @@ func BuildTorrentFilenameFromMagnet(dest string, magnet string) string {
 	return dest + name + ".torrent"
 }
 
-func MagnetToTorrent(magnet string, destination string) {
+func MagnetToTorrent(magnet string, destination string) string {
 
 	resp, err := http.PostForm("http://magnet2torrent.com/upload/", url.Values{"magnet": {magnet}})
 	defer resp.Body.Close()
@@ -34,13 +34,17 @@ func MagnetToTorrent(magnet string, destination string) {
 		log.Fatal(err)
 	}
 
-	out, err := os.Create(BuildTorrentFilenameFromMagnet(destination, magnet))
+	filename := BuildTorrentFilenameFromMagnet(destination, magnet)
+
+	out, err := os.Create(filename)
 	defer out.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	io.Copy(out, resp.Body)
+
+	return filename
 }
 
 type PirateBay struct {
@@ -64,7 +68,7 @@ func (pb PirateBay) Search(term string) string {
 	return result
 }
 
-func (pb PirateBay) SearchAndSave(term string, dest string) {
+func (pb PirateBay) SearchAndSave(term string, dest string) string {
 	magnet := pb.Search(term)
-	MagnetToTorrent(magnet, dest)
+	return MagnetToTorrent(magnet, dest)
 }

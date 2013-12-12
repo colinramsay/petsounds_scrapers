@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"strings"
 )
 
 const validProxy string = "http://tpb.unblocked.co"
@@ -31,15 +32,9 @@ func TestSearchForTorrent(t *testing.T) {
 	pirate := NewPirateBay(validProxy)
 	term := "Daft Punk Random Access Memories"
 
-	results := pirate.Search(term)
+	result := pirate.Search(term)
 
-	if len(results) == 0 {
-		//t.Errorf("No results were found for '%s', which is weird.", term)
-	}
-}
-
-func TestBestMatch(t *testing.T) {
-	if false {
-		t.Errorf("")
+	if len(result) == 0 && !strings.Contains(result, "magnet:") {
+		t.Errorf("No results were found for '%s', which is weird. Result: %v", term, result)
 	}
 }

@@ -2,12 +2,11 @@ package petsounds_scrapers
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
+	"io/ioutil"
 )
 
 type Scraper interface {
@@ -36,13 +35,9 @@ func MagnetToTorrent(magnet string, destination string) string {
 
 	filename := BuildTorrentFilenameFromMagnet(destination, magnet)
 
-	out, err := os.Create(filename)
-	defer out.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+	body, err := ioutil.ReadAll(resp.Body)
 
-	io.Copy(out, resp.Body)
+	err = ioutil.WriteFile(filename, body, 0644)
 
 	return filename
 }

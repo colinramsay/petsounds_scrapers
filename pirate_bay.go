@@ -1,12 +1,13 @@
 package petsounds_scrapers
 
 import (
+	"errors"
 	"github.com/PuerkitoBio/goquery"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
-	"io/ioutil"
 )
 
 type Scraper interface {
@@ -56,14 +57,17 @@ func (pb PirateBay) Search(term string) string {
 	// find the first tr of the #search results then get the <a> where the href starts with "magnet"
 	sel := "#searchResult tbody tr:first-child a[href^=magnet]"
 
-	log.Printf("doc: %v", doc)
-
 	result, _ := doc.Find(sel).Attr("href")
 
 	return result
 }
 
-func (pb PirateBay) SearchAndSave(term string, dest string) string {
+func (pb PirateBay) SearchAndSave(term string, dest string) (string, error) {
 	magnet := pb.Search(term)
-	return MagnetToTorrent(magnet, dest)
+
+	if len(magnet) == 0 {
+		return magnet, errors.New("Result was not found.")
+	}
+
+	return MagnetToTorrent(magnet, dest), nil
 }

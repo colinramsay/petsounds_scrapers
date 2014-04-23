@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-const validProxy string = "http://tpb.unblocked.co"
+const validProxy string = "http://bayporn.net"
 
 func TestSanity(t *testing.T) {
 	pirate := NewPirateBay(validProxy)
@@ -36,5 +36,15 @@ func TestSearchForTorrent(t *testing.T) {
 
 	if len(result) == 0 && !strings.Contains(result, "magnet:") {
 		t.Errorf("No results were found for '%s', which is weird. Result: %v", term, result)
+	}
+}
+
+func TestNonExistantTorrent(t *testing.T) {
+	pirate := NewPirateBay(validProxy)
+
+	_, err := pirate.SearchAndSave("asdon3££!@£11", "./delete.torrent")
+
+	if err == nil {
+		t.Errorf("err was nil, it should have a meaningful value")
 	}
 }
